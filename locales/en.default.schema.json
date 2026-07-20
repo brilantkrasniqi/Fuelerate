@@ -10,6 +10,7 @@
     "collection_card": "Collection card",
     "collections_grid": "Collections grid",
     "colors": "Colors",
+    "comparison_table": "Comparison table",
     "column": "Column",
     "content": "Content",
     "custom_section": "Custom section",
@@ -23,6 +24,7 @@
     "password": "Password",
     "primary": "Primary",
     "product": "Product",
+    "product_hero": "Product hero",
     "row": "Row",
     "search": "Search",
     "secondary": "Secondary",
@@ -40,13 +42,18 @@
     "grid_gap": "Grid spacing",
     "grid_item_width": "Grid item width",
     "input_corner_radius": "Input corner radius",
+    "layout": "Layout",
     "layout_direction": "Layout direction",
     "menu": "Menu",
     "customer_account_menu": "Customer account menu",
     "padding": "Padding",
+    "padding_left": "Padding left",
+    "padding_right": "Padding right",
     "page_margin": "Page margin",
     "page_width": "Page width",
     "show_payment_icons": "Show payment icons",
+    "show_low_stock_badge": "Show low stock badge",
+    "show_people_watching_badge": "Show people watching badge",
     "text_style": "Text style",
     "text": "Text"
   },
@@ -73,5 +80,9 @@
       "subtitle": "Subtitle",
       "normal": "Normal text"
     },
+    "layout": {
+      "left": "Left",
+      "right": "Right"
+    }
   }
 }
