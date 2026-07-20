@@ -1,0 +1,49 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-brand-500: #31331e;
+  --color-brand-300: #31331ebf;
+  --color-brand-100: #56814c80;
+  --color-buttons: #a8ca1b;
+  --color-lightgray: #f4f3ee;
+  --color-alert-400: #ff81814d;
+  --color-alert-300: #ff3030b5;
+  --color-success-200: #7aa66f40;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  touch-action: manipulation;
+  min-height: 100svh;
+}
+html:has(dialog[scroll-lock][open], details[scroll-lock][open]) {
+  overflow: hidden;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+p {
+  text-wrap: pretty;
+}
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+p:empty {
+  display: none;
+}

@@ -1,0 +1,30 @@
+{% doc %}
+  Renders a single product media item (image, video, or external video),
+  cropped to fill its container.
+
+  @param {media} media - The media item to render
+  @param {product} product - The parent product, used for the image alt text
+  @param {number} width - Target render width
+  @param {number} height - Target render height
+  @param {string} [loading] - 'eager' or 'lazy', defaults to 'lazy'
+
+  @example
+  {% render 'product-media-item', media: media, product: product, width: 345, height: 345 %}
+{% enddoc %}
+
+{% liquid
+  assign loading = loading | default: 'lazy'
+  assign image_size = width | append: 'x' | append: height
+%}
+{% case media.media_type %}
+  {% when 'image' %}
+    {{
+      media
+      | image_url: width: width, height: height, crop: 'center'
+      | image_tag: width: width, height: height, loading: loading, alt: product.title, class: 'w-full h-full object-cover'
+    }}
+  {% when 'video' %}
+    {{ media | video_tag: image_size: image_size, controls: true, loading: loading, class: 'w-full h-full object-cover' }}
+  {% when 'external_video' %}
+    {{ media | external_video_tag: image_size: image_size, class: 'w-full h-full object-cover' }}
+{% endcase %}

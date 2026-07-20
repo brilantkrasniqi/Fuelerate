@@ -1,0 +1,30 @@
+{
+  "name": "fuelerate",
+  "version": "1.0.0",
+  "description": "<h1 align=\"center\" style=\"position: relative;\">\r   <br>\r     <img src=\"./assets/shoppy-x-ray.svg\" alt=\"logo\" width=\"200\">\r   <br>\r   Shopify Skeleton Theme\r </h1>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx tailwindcss -i ./assets/app.css -o ./assets/theme.css --watch",
+    "build": "npx tailwindcss -i ./assets/app.css -o ./assets/theme.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brilantkrasniqi/Fuelerate.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/brilantkrasniqi/Fuelerate/issues"
+  },
+  "homepage": "https://github.com/brilantkrasniqi/Fuelerate#readme",
+  "devDependencies": {
+    "@shopify/prettier-plugin-liquid": "^1.11.0",
+    "@tailwindcss/cli": "^4.3.3",
+    "prettier": "^3.9.5",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "tailwindcss": "^4.3.3"
+  }
+}

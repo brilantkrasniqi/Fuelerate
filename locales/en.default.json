@@ -1,4 +1,9 @@
 {
+  "general": {
+    "menu": "Menu",
+    "primary_navigation": "Primary navigation",
+    "footer_navigation": "Footer navigation"
+  },
   "404": {
     "title": "404",
     "not_found": "Page not found.",
@@ -41,6 +46,25 @@
     "title": "This shop is private",
     "password": "Password",
     "enter": "Enter"
+  },
+  "products": {
+    "add_to_cart": "Add to cart",
+    "sold_out": "Sold out",
+    "quantity": "Quantity",
+    "regular_price": "Regular price",
+    "sale_price": "Sale price",
+    "limited_stock": "Limited stock",
+    "limited_stock_icon_alt": "Limited stock icon",
+    "people_watching": "{{ count }} people watching",
+    "people_watching_icon_alt": "People watching icon",
+    "save_percent": "Save {{ percent }}% off",
+    "featured_reasons_default_title": "Why you need this?",
+    "comparison_default_heading": "Why We Are Really Different",
+    "comparison_solution": "Solution",
+    "comparison_how_it_works": "How it works",
+    "comparison_what_to_consider": "What to consider",
+    "comparison_cost_over_time": "Cost over time",
+    "comparison_side_effects": "Side effects"
   },
   "search": {
     "title": "Search",

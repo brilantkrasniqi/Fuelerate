@@ -1,41 +1,41 @@
-<footer>
-  <div class="footer__copyright">
-    &copy;
-    {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
-  </div>
+<footer class="bg-lightgray mt-16">
+  <div
+    class="mx-auto flex max-w-6xl flex-col gap-8 px-5 py-12 md:flex-row md:items-start md:justify-between"
+  >
+    <div class="flex flex-col gap-2">
+      <a href="{{ routes.root_url }}" class="text-brand-500 text-2xl leading-none font-bold">
+        {{ shop.name }}
+      </a>
+      {% if shop.description %}
+        <p class="text-brand-300 max-w-xs leading-[1.1]">{{ shop.description }}</p>
+      {% endif %}
+    </div>
 
-  <div class="footer__links">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
-
-  <div class="footer__payment">
-    {% if section.settings.show_payment_icons %}
-      {% for type in shop.enabled_payment_types %}
-        {{ type | payment_type_svg_tag }}
+    <nav class="flex flex-wrap gap-x-6 gap-y-2" aria-label="{{ 'general.footer_navigation' | t }}">
+      {% for link in section.settings.menu.links %}
+        <a href="{{ link.url }}" class="text-brand-500 hover:text-brand-300 leading-[1.1]">
+          {{ link.title }}
+        </a>
       {% endfor %}
+    </nav>
+
+    {% if section.settings.show_payment_icons %}
+      <div class="flex flex-wrap items-center gap-2">
+        {% for type in shop.enabled_payment_types %}
+          {{ type | payment_type_svg_tag }}
+        {% endfor %}
+      </div>
     {% endif %}
   </div>
-</footer>
 
-{% stylesheet %}
-  footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 2rem;
-  }
-  footer a {
-    text-decoration: none;
-    color: var(--color-foreground);
-  }
-  footer .footer__links,
-  footer .footer__payment {
-    display: flex;
-    gap: 1rem;
-  }
-{% endstylesheet %}
+  <div class="border-brand-500/10 border-t">
+    <p class="text-brand-300 mx-auto max-w-6xl px-5 py-4 text-center leading-[1.1]">
+      &copy;
+      {{ 'now' | date: '%Y' }}
+      {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
+    </p>
+  </div>
+</footer>
 
 {% schema %}
 {
