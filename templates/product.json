@@ -12,9 +12,31 @@
     "main": {
       "type": "product",
       "settings": {}
+    },
+    "product-bar": {
+      "type": "product-bar",
+      "blocks": {
+        "item-1": { "type": "trust_item", "settings": { "text": "90-Day Results-Backed Guarantee" } },
+        "item-2": { "type": "trust_item", "settings": { "text": "Designed in USA" } },
+        "item-3": { "type": "trust_item", "settings": { "text": "Ships in 2–6 Days" } },
+        "item-4": { "type": "trust_item", "settings": { "text": "A Tree Planted per Order" } }
+      },
+      "block_order": ["item-1", "item-2", "item-3", "item-4"],
+      "settings": {}
+    },
+    "product-benefits": {
+      "type": "product-benefits",
+      "settings": {}
+    },
+    "comparison-table": {
+      "type": "comparison-table",
+      "settings": {}
     }
   },
   "order": [
-    "main"
+    "main",
+    "product-bar",
+    "product-benefits",
+    "comparison-table"
   ]
 }

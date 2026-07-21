@@ -1,0 +1,73 @@
+{% doc %}
+  Renders the product media gallery: a featured image + thumbnail grid on
+  desktop, and a swipeable slider of all media on mobile. Outputs two
+  sibling elements so they sit directly in the parent grid.
+
+  @param {product} product - The product whose media is rendered
+
+  @example
+  {% render 'product-media-gallery', product: product %}
+{% enddoc %}
+
+{% comment %} Desktop: featured image + thumbnail grid {% endcomment %}
+<div class='bg-lightgray hidden pb-10 md:block md:pb-37.5'>
+  {% if product.featured_image %}
+    {{
+      product.featured_image
+      | image_url: width: 690
+      | image_tag: width: 690, height: 690, loading: 'eager', alt: product.title, class: 'w-full h-full object-cover'
+    }}
+  {% endif %}
+  <div class='grid grid-cols-2 gap-0'>
+    {% for media in product.media %}
+      {% if media.id != product.featured_media.id %}
+        {% render 'product-media-item', media: media, product: product, width: 345, height: 345, loading: 'lazy' %}
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% comment %} Mobile: swipeable slider of all media {% endcomment %}
+{% if product.media.size > 0 %}
+  <div class='splide md:hidden' data-product-media-slider>
+    <div class='splide__track'>
+      <ul class='splide__list' role='list'>
+        {% for media in product.media %}
+          <li class='splide__slide'>
+            {% render 'product-media-item', media: media, product: product, width: 690, height: 690, loading: 'lazy' %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endif %}
+
+{% javascript %}
+  document.querySelectorAll('[data-product-media-slider]').forEach(function (el) {
+    var mql = window.matchMedia('(min-width: 768px)');
+    var splide;
+
+    function sync() {
+      if (mql.matches) {
+        if (splide) {
+          splide.destroy();
+          splide = null;
+        }
+      } else if (!splide && typeof Splide !== 'undefined') {
+        splide = new Splide(el, {
+          perPage: 1,
+          gap: '0px',
+          arrows: false,
+          pagination: true,
+          classes: {
+            pagination: 'splide__pagination flex items-center justify-center gap-2 pt-4',
+            page: 'splide__pagination__page h-1.5 w-1.5 rounded-full bg-brand-500/30 [&.is-active]:bg-brand-500 [&.is-active]:w-4 transition-all',
+          },
+        });
+        splide.mount();
+      }
+    }
+
+    sync();
+    mql.addEventListener('change', sync);
+  });
+{% endjavascript %}

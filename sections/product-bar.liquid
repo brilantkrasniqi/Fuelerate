@@ -1,0 +1,59 @@
+{% comment %}
+  Full-width trust bar. Each trust point is a block so merchants can edit
+  the copy, add an optional icon, and add/remove/reorder items in the
+  theme editor instead of the text being hardcoded.
+{% endcomment %}
+{% if section.blocks.size > 0 %}
+  <div class='bg-brand-500 px-5 py-7'>
+    <div class='mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-3'>
+      {% for block in section.blocks %}
+        <div class='flex items-center gap-2' {{ block.shopify_attributes }}>
+          {% if block.settings.icon %}
+            {{
+              block.settings.icon
+              | image_url: width: 48
+              | image_tag: width: 24, height: 24, loading: 'lazy', alt: block.settings.text, class: 'h-6 w-6 shrink-0'
+            }}
+          {% endif %}
+          <p class='text-xl leading-[1.1] text-white'>{{ block.settings.text }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "t:general.product_bar",
+  "blocks": [
+    {
+      "type": "trust_item",
+      "name": "t:general.trust_item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:labels.text",
+          "default": "Trust point"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "t:labels.icon"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.product_bar",
+      "blocks": [
+        { "type": "trust_item", "settings": { "text": "90-Day Results-Backed Guarantee" } },
+        { "type": "trust_item", "settings": { "text": "Designed in USA" } },
+        { "type": "trust_item", "settings": { "text": "Ships in 2–6 Days" } },
+        { "type": "trust_item", "settings": { "text": "A Tree Planted per Order" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

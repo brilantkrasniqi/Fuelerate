@@ -1,78 +1,86 @@
-{% comment %}
-  Comparison table with placeholder content. Static for now — swap the
-  hardcoded rows below for real data once the layout is approved.
-{% endcomment %}
-<div class='comparison-table'>
-  <div class='comparison-table__content flex flex-col gap-10'>
-    <h2 class='text-brand-500 text-center text-4xl leading-[1.2]'>Why We Are Really Different</h2>
-    <div class='overflow-hidden rounded-3xl bg-white shadow-lg'>
-      <div class='comparison-table__row px-8 py-5'>
-        <span class='text-brand-500 font-bold'>Solution</span>
-        <span class='text-brand-500 font-bold'>How it works</span>
-        <span class='text-brand-500 font-bold'>What to consider</span>
-        <span class='text-brand-500 font-bold'>Cost over time</span>
-        <span class='text-brand-500 font-bold'>Side effects</span>
-      </div>
-      <div class='comparison-table__row mx-3 mb-3 items-center rounded-2xl bg-[#3f6b3b] px-8 py-6'>
-        <div class='flex items-center gap-3'>
-          <img
-            src='{{ 'shoppy-x-ray.svg' | asset_url }}'
-            alt=''
-            width='32'
-            height='32'
-            loading='lazy'
-            class='shrink-0'
-          >
-          <span class='font-bold text-white'>Terra Therapy</span>
+{% liquid
+  assign comparison = product.metafields.custom.comparison_table.value
+  assign columns = comparison.columns.value
+  assign rows = comparison.rows.value
+  assign remaining_columns = columns.size | minus: 1
+  assign row_grid_style = 'grid-template-columns: 1.4fr repeat(' | append: remaining_columns | append: ', 1fr);'
+%}
+{% if rows.size > 0 and columns.size > 0 %}
+  <div class='comparison-table'>
+    <div class='comparison-table__content flex flex-col gap-10'>
+      <h2 class='text-brand-500 text-center text-4xl leading-[1.2]'>
+        {% if comparison.headings.value != blank %}
+          {{ comparison.headings.value }}
+        {% else %}
+          {{ 'products.comparison_default_heading' | t }}
+        {% endif %}
+      </h2>
+
+      <div class='relative rounded-3xl bg-white shadow-sm'>
+        <div class='comparison-table__row px-8 py-5' style='{{ row_grid_style }}'>
+          {% for column in columns %}
+            <span class='text-brand-500 font-bold'>{{ column.table_heading_label.value }}</span>
+          {% endfor %}
         </div>
-        <span class='font-bold text-white'>Reconnects body to Earth's natural charge to reduce inflammation and improve sleep</span>
-        <span class='font-bold text-white'>Requires grounded outlet and direct skin contact for best results</span>
-        <span class='font-bold text-white'>One-time purchase</span>
-        <span class='font-bold text-white'>None - 100% safe, drug-free</span>
-      </div>
-      <div class='comparison-table__row border-brand-100 items-center border-t px-8 py-6'>
-        <div class='flex flex-col items-center gap-2 text-center'>
-          <img src='{{ 'shoppy-x-ray.svg' | asset_url }}' alt='' width='32' height='32' loading='lazy'>
-          <span class='text-brand-500 font-bold'>Sleeping Pills</span>
-        </div>
-        <span class='text-brand-300'>Sedate the brain with sleep-inducing chemicals</span>
-        <span class='text-brand-300'>Tolerance builds, grogginess, not long-term safe</span>
-        <span class='text-brand-300'>Ongoing</span>
-        <span class='text-brand-300'>Dependency & side effects</span>
-      </div>
-      <div class='comparison-table__row border-brand-100 items-center border-t px-8 py-6'>
-        <div class='flex flex-col items-center gap-2 text-center'>
-          <img src='{{ 'shoppy-x-ray.svg' | asset_url }}' alt='' width='32' height='32' loading='lazy'>
-          <span class='text-brand-500 font-bold'>Pain Meds</span>
-        </div>
-        <span class='text-brand-300'>Block pain signals temporarily</span>
-        <span class='text-brand-300'>Doesn't treat root cause, side effects common</span>
-        <span class='text-brand-300'>High if chronic</span>
-        <span class='text-brand-300'>Risk of addiction or long-term damage</span>
-      </div>
-      <div class='comparison-table__row border-brand-100 items-center border-t px-8 py-6'>
-        <div class='flex flex-col items-center gap-2 text-center'>
-          <img src='{{ 'shoppy-x-ray.svg' | asset_url }}' alt='' width='32' height='32' loading='lazy'>
-          <span class='text-brand-500 font-bold'>Chiropractor</span>
-        </div>
-        <span class='text-brand-300'>Manual realignment of joints/spine</span>
-        <span class='text-brand-300'>Frequent visits needed, temporary relief</span>
-        <span class='text-brand-300'>High recurring cost</span>
-        <span class='text-brand-300'>Not suitable for every condition</span>
-      </div>
-      <div class='comparison-table__row border-brand-100 items-center border-t px-8 py-6'>
-        <div class='flex flex-col items-center gap-2 text-center'>
-          <img src='{{ 'shoppy-x-ray.svg' | asset_url }}' alt='' width='32' height='32' loading='lazy'>
-          <span class='text-brand-500 font-bold'>Supplements</span>
-        </div>
-        <span class='text-brand-300'>Target isolated symptoms like melatonin or blue light</span>
-        <span class='text-brand-300'>Vary in effectiveness, often don't address the root</span>
-        <span class='text-brand-300'>Ongoing</span>
-        <span class='text-brand-300'>Often unproven or inconsistent</span>
+
+        {% for row in rows %}
+          {% assign row_values = row.row_values.value %}
+          {% if row.highlight.value %}
+            <div
+              class='comparison-table__row relative z-10 -mx-4 -my-3 items-center rounded-2xl bg-[#3f6b3b] px-9 py-7 shadow-xl'
+              style='{{ row_grid_style }}'
+            >
+              {% for column in columns %}
+                {% if forloop.first %}
+                  <div class='flex items-center gap-3'>
+                    <span class='flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white'>
+                      {% if row.row_image.value %}
+                        {{
+                          row.row_image.value
+                          | image_url: width: 40
+                          | image_tag: width: 20, height: 20, loading: 'lazy', alt: row.row_name.value
+                        }}
+                      {% endif %}
+                    </span>
+                    <span class='font-bold text-white'>{{ row.row_name.value }}</span>
+                  </div>
+                {% else %}
+                  {% assign value_index = forloop.index0 | minus: 1 %}
+                  <span class='font-bold text-white'>{{ row_values[value_index] }}</span>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% else %}
+            <div
+              class='comparison-table__row border-brand-100 items-center border-t px-8 py-6'
+              style='{{ row_grid_style }}'
+            >
+              {% for column in columns %}
+                {% if forloop.first %}
+                  <div class='flex items-center gap-3'>
+                    <span class='flex h-6 w-6 shrink-0 items-center justify-center'>
+                      {% if row.row_image.value %}
+                        {{
+                          row.row_image.value
+                          | image_url: width: 40
+                          | image_tag: width: 24, height: 24, loading: 'lazy', alt: row.row_name.value
+                        }}
+                      {% endif %}
+                    </span>
+                    <span class='text-brand-500 font-bold'>{{ row.row_name.value }}</span>
+                  </div>
+                {% else %}
+                  {% assign value_index = forloop.index0 | minus: 1 %}
+                  <span class='text-brand-300'>{{ row_values[value_index] }}</span>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endfor %}
       </div>
     </div>
   </div>
-</div>
+{% endif %}
 
 {% stylesheet %}
   .comparison-table {
@@ -85,7 +93,6 @@
   }
   .comparison-table__row {
     display: grid;
-    grid-template-columns: 1.1fr 1.6fr 1.6fr 1fr 1fr;
     gap: 1rem;
   }
 {% endstylesheet %}

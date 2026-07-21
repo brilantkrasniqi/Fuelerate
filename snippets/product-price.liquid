@@ -1,0 +1,32 @@
+{% doc %}
+  Renders the price for a variant. When the variant is on sale, shows the
+  sale price, the struck-through compare-at price, and a "save X%" badge.
+
+  @param {variant} variant - The variant whose price is rendered
+
+  @example
+  {% render 'product-price', variant: product.selected_or_first_available_variant %}
+{% enddoc %}
+
+<div>
+  {% if variant.compare_at_price > variant.price %}
+    {% liquid
+      assign discount_percent = variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round
+    %}
+    <div class='flex items-center gap-4'>
+      <span class='text-alert-300 text-3xl leading-[1.2] md:text-4xl'>
+        {{- variant.price | money -}}
+      </span>
+      <span class='text-brand-500 text-3xl leading-[1.2] md:text-4xl'>
+        {{ variant.compare_at_price | money }}
+      </span>
+      <div class='bg-brand-100 flex items-center justify-center rounded-3xl px-4 py-1'>
+        <span class='text-brand-500 leading-[1.1] font-bold'>
+          {{ 'products.save_percent' | t: percent: discount_percent }}
+        </span>
+      </div>
+    </div>
+  {% else %}
+    <span class='text-brand-500 text-3xl leading-[1.2] md:text-4xl'>{{ variant.price | money }}</span>
+  {% endif %}
+</div>
