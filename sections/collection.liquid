@@ -5,37 +5,37 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
 {% endcomment %}
 
-<h1>{{ collection.title }}</h1>
+<div class="collection">
+  <div class="collection__content">
+    <h1 class="text-brand-500 text-3xl leading-[1.2] md:text-4xl">{{ collection.title }}</h1>
 
-<div class="collection-products">
-  {% paginate collection.products by 20 %}
-    {% for product in collection.products %}
-      <div class="collection-product">
-        {% if product.featured_image %}
-          {% render 'image',
-            class: 'collection-product__image',
-            image: product.featured_image,
-            url: product.url,
-            width: 400,
-            height: 400,
-            crop: 'center'
-          %}
-        {% endif %}
-        <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
+    {% paginate collection.products by 20 %}
+      {% if collection.products.size > 0 %}
+        <div class="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
+          {% for product in collection.products %}
+            {% render 'product-card', product: product %}
+          {% endfor %}
         </div>
-      </div>
-    {% endfor %}
+      {% else %}
+        <p class="text-brand-300 leading-[1.1]">{{ 'collections.empty' | t }}</p>
+      {% endif %}
 
-    {{ paginate | default_pagination }}
-  {% endpaginate %}
+      {{ paginate | default_pagination }}
+    {% endpaginate %}
+  </div>
 </div>
 
 {% stylesheet %}
-  .collection-products {
+  .collection {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    grid-template-columns: var(--content-grid);
+    padding: 48px 0;
+  }
+  .collection__content {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
   }
 {% endstylesheet %}
 

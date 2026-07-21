@@ -1,0 +1,47 @@
+{% doc %}
+  Renders a simple product card with image, title, and price, linking to the
+  product page. Used anywhere a list of products is displayed (collection
+  grids, featured product grids, etc.).
+
+  @param {product} product - The product to render
+  @param {number} [width] - The image width to request, defaults to 400
+  @param {number} [height] - The image height to request, defaults to 400
+
+  @example
+  {% render 'product-card', product: product %}
+{% enddoc %}
+
+{% liquid
+  assign width = width | default: 400
+  assign height = height | default: 400
+  assign current_variant = product.selected_or_first_available_variant
+%}
+<a href='{{ product.url }}' class='product-card group flex flex-col gap-3'>
+  <div class='bg-lightgray relative aspect-square overflow-hidden rounded-2xl'>
+    {% if product.featured_image %}
+      {{
+        product.featured_image
+        | image_url: width: width, height: height, crop: 'center'
+        | image_tag: width: width, height: height, loading: 'lazy', alt: product.featured_image.alt
+        | default: product.title,
+          class: 'h-full w-full object-cover transition-transform duration-300 group-hover:scale-105'
+      }}
+    {% endif %}
+    {% unless current_variant.available %}
+      <span class='bg-alert-400 text-brand-500 absolute top-3 left-3 rounded-3xl px-3 py-1 text-sm leading-[1.1]'>
+        {{ 'products.sold_out' | t }}
+      </span>
+    {% endunless %}
+  </div>
+  <div class='flex flex-col gap-1'>
+    <p class='text-brand-500 leading-[1.2] font-bold'>{{ product.title }}</p>
+    <div class='flex items-center gap-2'>
+      {% if current_variant.compare_at_price > current_variant.price %}
+        <span class='text-alert-300 leading-[1.1]'>{{ current_variant.price | money }}</span>
+        <span class='text-brand-300 leading-[1.1] line-through'>{{ current_variant.compare_at_price | money }}</span>
+      {% else %}
+        <span class='text-brand-500 leading-[1.1]'>{{ current_variant.price | money }}</span>
+      {% endif %}
+    </div>
+  </div>
+</a>

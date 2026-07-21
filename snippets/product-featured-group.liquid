@@ -1,0 +1,36 @@
+{% doc %}
+  Renders the "featured reasons" group from the product's
+  custom.featured_group metaobject: a title followed by a wrapping list of
+  icon + title + description items. Renders nothing when the metafield is
+  absent.
+
+  @param {product} product - The product to read custom.featured_group from
+
+  @example
+  {% render 'product-featured-group', product: product %}
+{% enddoc %}
+
+{% liquid
+  assign featured_group = product.metafields.custom.featured_group.value
+  assign featured_group_items = featured_group.items.value
+%}
+{% if featured_group and featured_group.title %}
+  <div class='flex flex-col gap-5'>
+    <p class='text-brand-500 leading-[1.1] font-bold'>
+      {% if featured_group.title != blank %}
+        {{ featured_group.title }}
+      {% else %}
+        {{ 'products.featured_reasons_default_title' | t }}
+      {% endif %}
+    </p>
+    <div class='flex flex-wrap items-center justify-center gap-5'>
+      {% for item in featured_group_items %}
+        <div class='flex w-[calc((100%-2.5rem)/2)] shrink-0 flex-col md:w-[calc((100%-2.5rem)/3)]'>
+          {{ item.icon | image_url: width: 24 | image_tag: width: 24, height: 24, loading: 'lazy' }}
+          {{ item.title }}
+          {{ item.description }}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}

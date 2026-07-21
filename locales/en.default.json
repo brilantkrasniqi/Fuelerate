@@ -2,7 +2,9 @@
   "general": {
     "menu": "Menu",
     "primary_navigation": "Primary navigation",
-    "footer_navigation": "Footer navigation"
+    "footer_navigation": "Footer navigation",
+    "shop": "Shop",
+    "all_products": "All products"
   },
   "404": {
     "title": "404",
@@ -33,7 +35,8 @@
     }
   },
   "collections": {
-    "title": "Collections"
+    "title": "Collections",
+    "empty": "No products found in this collection."
   },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",
@@ -64,7 +67,8 @@
     "comparison_how_it_works": "How it works",
     "comparison_what_to_consider": "What to consider",
     "comparison_cost_over_time": "Cost over time",
-    "comparison_side_effects": "Side effects"
+    "comparison_side_effects": "Side effects",
+    "benefits_science_link": "Explore the science behind these benefits"
   },
   "search": {
     "title": "Search",

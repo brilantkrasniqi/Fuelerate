@@ -1,152 +1,36 @@
 {% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
+  Product hero: media gallery on one side, and the buy form (title, badges,
+  description, price, featured reasons, add-to-cart, and content tabs) on
+  the other. Each piece is a focused snippet so this section stays a thin
+  orchestrator. Below-the-fold content (trust bar, benefits, comparison
+  table) lives in its own sections in templates/product.json.
 
   https://shopify.dev/docs/storefronts/themes/architecture/templates/product
 {% endcomment %}
-{% liquid
-  assign current_variant = product.selected_or_first_available_variant
-  assign is_low_stock = false
-  if current_variant.inventory_management != blank and current_variant.inventory_quantity > 0 and current_variant.inventory_quantity < 50
-    assign is_low_stock = true
-  endif
-  assign watcher_count = product.id | modulo: 73 | plus: 15
-%}
-<div
-  class='product-hero__content grid gap-11.5 py-[var(--section-padding-block)] md:grid-cols-2'
-  style='--section-padding-block: {{ section.settings.padding }}px'
->
-  <div class='{% if section.settings.layout == "right" %}md:order-last{% endif %}'>
-    {% comment %} Desktop: featured image + thumbnail grid {% endcomment %}
-    <div class='bg-lightgray hidden pb-10 md:block md:pb-[150px]'>
-      {% if product.featured_image %}
-        {{
-          product.featured_image
-          | image_url: width: 690
-          | image_tag:
-            width: 690,
-            height: 690,
-            loading: 'eager',
-            alt: product.title,
-            class: 'w-full h-full object-cover'
-        }}
-      {% endif %}
-      <div class='grid grid-cols-2 gap-0'>
-        {% for media in product.media %}
-          {% if media.id != product.featured_media.id %}
-            {% render 'product-media-item', media: media, product: product, width: 345, height: 345, loading: 'lazy' %}
-          {% endif %}
-        {% endfor %}
-      </div>
-    </div>
-    {% comment %} Mobile: swipeable slider of all media {% endcomment %}
-    {% if product.media.size > 0 %}
-      <div class='splide md:hidden' data-product-media-slider>
-        <div class='splide__track'>
-          <ul class='splide__list' role='list'>
-            {% for media in product.media %}
-              <li class='splide__slide'>
-                {% render 'product-media-item',
-                  media: media,
-                  product: product,
-                  width: 690,
-                  height: 690,
-                  loading: 'lazy'
-                %}
-              </li>
-            {% endfor %}
-          </ul>
-        </div>
-      </div>
-    {% endif %}
-  </div>
+{% assign current_variant = product.selected_or_first_available_variant %}
+<div class='grid gap-11.5 px-5 sm:p-0 md:grid-cols-2'>
+  {% render 'product-media-gallery', product: product %}
+
   {% form 'product', product %}
-    <div class='flex flex-col gap-7.5'>
+    <div class='section-p-right flex flex-col gap-7.5'>
       <div class='flex flex-col gap-2.5'>
         <h1 class='text-brand-500 text-3xl leading-[1.2] md:text-5xl'>{{ product.title }}</h1>
-        <div class='flex items-center gap-3'>
-          {% comment %} Only shown when tracked inventory is under 50 units {% endcomment %}
-          {% if is_low_stock and section.settings.show_low_stock_badge %}
-            <div class='bg-alert-400 flex items-center justify-center gap-2 rounded-3xl px-2 py-1'>
-              <img
-                src='{{ 'Alert-Red.svg' | asset_url }}'
-                alt='{{ 'products.limited_stock_icon_alt' | t }}'
-                width='20'
-                height='20'
-                class='h-4 w-4 shrink-0'
-              >
-              <span class='text-brand-500 leading-[1.1]'>{{ 'products.limited_stock' | t }}</span>
-            </div>
-          {% endif %}
-          {% if section.settings.show_people_watching_badge %}
-            <div class='bg-success-200 flex items-center gap-2 rounded-3xl px-2 py-1'>
-              <img
-                src='{{ 'Alert-Success.svg' | asset_url }}'
-                alt='{{ 'products.people_watching_icon_alt' | t }}'
-                width='20'
-                height='20'
-                class='h-4 w-4 shrink-0'
-              >
-              <span
-                class='text-brand-500 leading-[1.1]'
-                data-people-watching
-                data-template='{{ 'products.people_watching' | t: count: '__COUNT__' | escape }}'
-              >
-                {{ 'products.people_watching' | t: count: watcher_count }}
-              </span>
-            </div>
-          {% endif %}
-        </div>
+
+        {% render 'product-badges',
+          product: product,
+          show_low_stock: section.settings.show_low_stock_badge,
+          show_people_watching: section.settings.show_people_watching_badge
+        %}
+
         {% if product.description %}
           <div class='**:text-brand-500 **:leading-[1.1]'>{{ product.description }}</div>
         {% endif %}
-        <div>
-          {% if current_variant.compare_at_price > current_variant.price %}
-            {% liquid
-              assign discount_percent = current_variant.compare_at_price | minus: current_variant.price | times: 100.0 | divided_by: current_variant.compare_at_price | round
-            %}
-            <div class='flex items-center gap-4'>
-              <span class='text-alert-300 text-3xl leading-[1.2] md:text-4xl'>
-                {{- current_variant.price | money -}}
-              </span>
-              <span class='text-brand-500 text-3xl leading-[1.2] md:text-4xl'>
-                {{ current_variant.compare_at_price | money }}
-              </span>
-              <div class='bg-brand-100 flex items-center justify-center rounded-3xl px-4 py-1'>
-                <span class='text-brand-500 leading-[1.1] font-bold'>
-                  {{ 'products.save_percent' | t: percent: discount_percent }}
-                </span>
-              </div>
-            </div>
-          {% else %}
-            <span class='text-brand-500 text-3xl leading-[1.2] md:text-4xl'>{{ current_variant.price | money }}</span>
-          {% endif %}
-        </div>
+
+        {% render 'product-price', variant: current_variant %}
       </div>
-      {% assign featured_group = product.metafields.custom.featured_group.value %}
-      {% if featured_group %}
-        {% assign featured_group_items = featured_group.items.value %}
-        <div class='flex flex-col gap-5'>
-          {% if featured_group.title %}
-            <p class='text-brand-500 leading-[1.1] font-bold'>
-              {% if featured_group.title != blank %}
-                {{ featured_group.title }}
-              {% else %}
-                {{ 'products.featured_reasons_default_title' | t }}
-              {% endif %}
-            </p>
-            <div class='flex flex-wrap items-center justify-center gap-5'>
-              {% for item in featured_group_items %}
-                <div class='flex w-[calc((100%-2.5rem)/2)] shrink-0 flex-col md:w-[calc((100%-2.5rem)/3)]'>
-                  {{ item.icon | image_url: width: 24 | image_tag: width: 24, height: 24, loading: 'lazy' }}
-                  {{ item.title }}
-                  {{ item.description }}
-                </div>
-              {% endfor %}
-            </div>
-          {% endif %}
-        </div>
-      {% endif %}
+
+      {% render 'product-featured-group', product: product %}
+
       <input type='hidden' name='id' value='{{ current_variant.id }}'>
       <button
         type='submit'
@@ -164,281 +48,27 @@
           {% endif %}
         </span>
       </button>
-      <div>
-        {% liquid
-          assign content_group = product.metafields.custom.content_group.value
-          assign content_blocks = content_group.content_blocks.value
-        %}
-        {% if content_blocks %}
-          {% comment %} Desktop: tabs {% endcomment %}
-          <div class='hidden md:block'>
-            <div class='flex flex-col gap-7.5' data-product-tabs>
-              <div class='flex w-full items-center' role='tablist'>
-                {% for item in content_blocks %}
-                  <button
-                    type='button'
-                    class='group border-brand-500 relative flex flex-1 cursor-pointer items-center justify-center overflow-visible! border-b pb-4.5 {% if forloop.first %}active{% endif %}'
-                    data-product-tab
-                    role='tab'
-                    aria-selected='{% if forloop.first %}true{% else %}false{% endif %}'
-                  >
-                    <span class='text-center whitespace-nowrap'>{{ item.title.value }}</span>
-                    <span class='bg-brand-500 absolute right-0 bottom-0 h-1 w-1 translate-y-1/2 rounded-full'></span>
-                    <span
-                      class='bg-brand-500 absolute bottom-0 hidden h-3.5 w-full translate-y-1/2 rounded-full group-[.active]:block'
-                    ></span>
-                  </button>
-                {% endfor %}
-              </div>
-              {% for item in content_blocks %}
-                <div
-                  class='**:text-md **:text-brand-300 **:leading-[1.1]'
-                  data-product-tabpanel
-                  role='tabpanel'
-                  {% unless forloop.first %}
-                    hidden
-                  {% endunless %}
-                >
-                  {{ item.content | metafield_tag }}
-                </div>
-              {% endfor %}
-            </div>
-          </div>
-          {% comment %} Mobile: accordion, no JS required {% endcomment %}
-          <div class='flex flex-col md:hidden'>
-            {% for item in content_blocks %}
-              <details
-                class='group border-brand-500 border-b'
-                {% if forloop.first %}
-                  open
-                {% endif %}
-              >
-                <summary
-                  class='flex cursor-pointer list-none items-center justify-between gap-4 py-4 [&::-webkit-details-marker]:hidden'
-                >
-                  <span class='text-brand-500 leading-[1.1] font-bold'>{{ item.title.value }}</span>
-                  <svg
-                    class='text-brand-500 h-3 w-3 shrink-0 transition-transform group-open:rotate-180'
-                    viewBox='0 0 12 8'
-                    fill='none'
-                    aria-hidden='true'
-                  >
-                    <path
-                      d='M1 1L6 6L11 1'
-                      stroke='currentColor'
-                      stroke-width='1.5'
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
-                    />
-                  </svg>
-                </summary>
-                <div class='**:text-md **:text-brand-300 pb-4 **:leading-[1.1]'>
-                  {{ item.content | metafield_tag }}
-                </div>
-              </details>
-            {% endfor %}
-          </div>
-        {% endif %}
-      </div>
+
+      {% render 'product-content-tabs', product: product %}
     </div>
   {% endform %}
 </div>
-{% render 'product-bar' %}
-{% liquid
-  assign benefits_title = product.metafields.custom.benefits.value.title
-  assign benefits_description = product.metafields.custom.benefits.value.description
-  assign benefits_items = product.metafields.custom.benefits.value.benefits.value
-%}
-{% if benefits_items.size > 0 %}
-  <div class='bg-lightgray grid gap-0 p-10 md:grid-cols-2'>
-    <div class='flex flex-col gap-6'>
-      <div class='flex flex-col gap-1'>
-        <h2 class='text-brand-500 text-[64px] leading-[1.2]'>{{ benefits_title }}</h2>
-        <p class='leading-[1.1]'>{{ benefits_description }}</p>
-      </div>
-      <div class='flex justify-between gap-4'>
-        <div class='splide' id='benefits-tabs'>
-          <div class='splide__track'>
-            <ul class='splide__list'>
-              {% for item in benefits_items %}
-                <li
-                  class='splide__slide group border-brand-500 [&.is-active]:bg-brand-500 [&.is-active]:border-brand-500 flex w-fit items-center gap-2.5 rounded-full border px-5 py-3'
-                >
-                  {{ item.tab_icon | image_url: width: 24 | image_tag: width: 24, height: 24, loading: 'lazy' }}
-                  <span class='text-brand-500 leading-[1.1] group-[.is-active]:text-white'>{{ item.tab_title }}</span>
-                </li>
-              {% endfor %}
-            </ul>
-          </div>
-        </div>
-        <div class='splide w-[331px]' id='benefits-image'>
-          <div class='splide__track'>
-            <ul class='splide__list'>
-              {% for item in benefits_items %}
-                <li class='splide__slide w-fit'>
-                  {{
-                    item.benefit_image
-                    | image_url: width: 331, height: 353, crop: 'center'
-                    | image_tag: width: 331, height: 353, loading: 'lazy', class: 'object-cover'
-                  }}
-                </li>
-              {% endfor %}
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class='splide bg-brand-300 px-25 py-12.5' id='benefits-text'>
-      <div class='splide__track'>
-        <ul class='splide__list'>
-          {% for item in benefits_items %}
-            <li class='splide__slide'>
-              <div class='flex flex-col justify-between gap-8.5'>
-                <h3 class='text-5xl leading-[1.2] text-white'>{{ item.tab_title }}</h3>
-                <div class='**:text-white'>
-                  {{ item.benefit_description | metafield_tag }}
-                </div>
-                {% if item.link %}
-                  <a href='{{item.link}}' class='flex flex-col items-center justify-center gap-3'>
-                    <img src='{{'TestTube.svg' |  asset_url}}' width='24' height='24'>
-                    <span class='leading-[1.1] font-bold text-white'>Explore the science behind these benefits</span>
-                  </a>
-                {% endif %}
-              </div>
-            </li>
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
-  </div>
-{% endif %}
+
 {% stylesheet %}
-  .product-hero {
-    display: grid;
-    grid-template-columns: var(--content-grid);
+  .section-p-right {
+    padding-right: clamp(1.25rem, -0.8135rem + 5.1587vw, 5.3125rem);
   }
-  .product-hero__content {
-    grid-column: 2;
+  @media (max-width: 768px) {
+    .section-p-right {
+      padding-right: 0px;
+    }
   }
 {% endstylesheet %}
-
-{% javascript %}
-  document.querySelectorAll('[data-people-watching]').forEach(function (element) {
-    var min = 15;
-    var max = 87;
-    var randomCount = Math.floor(Math.random() * (max - min + 1)) + min;
-    element.textContent = element.dataset.template.replace('__COUNT__', randomCount);
-  });
-
-  document.querySelectorAll('[data-product-tabs]').forEach(function (root) {
-    var tabs = root.querySelectorAll('[data-product-tab]');
-    var panels = root.querySelectorAll('[data-product-tabpanel]');
-
-    tabs.forEach(function (tab, index) {
-      tab.addEventListener('click', function () {
-        tabs.forEach(function (otherTab) {
-          otherTab.classList.remove('active');
-          otherTab.setAttribute('aria-selected', 'false');
-        });
-        tab.classList.add('active');
-        tab.setAttribute('aria-selected', 'true');
-        panels.forEach(function (panel, panelIndex) {
-          panel.hidden = panelIndex !== index;
-        });
-      });
-    });
-  });
-
-  document.querySelectorAll('[data-product-media-slider]').forEach(function (el) {
-    var mql = window.matchMedia('(min-width: 768px)');
-    var splide;
-
-    function sync() {
-      if (mql.matches) {
-        if (splide) {
-          splide.destroy();
-          splide = null;
-        }
-      } else if (!splide && typeof Splide !== 'undefined') {
-        splide = new Splide(el, {
-          perPage: 1,
-          gap: '0px',
-          arrows: false,
-          pagination: true,
-          classes: {
-            pagination: 'splide__pagination flex items-center justify-center gap-2 pt-4',
-            page: 'splide__pagination__page h-1.5 w-1.5 rounded-full bg-brand-500/30 [&.is-active]:bg-brand-500 [&.is-active]:w-4 transition-all',
-          },
-        });
-        splide.mount();
-      }
-    }
-
-    sync();
-    mql.addEventListener('change', sync);
-  });
-
-  var benefitTabsEl = document.getElementById('benefits-tabs');
-  var benefitImageEl = document.getElementById('benefits-image');
-  var benefitTextEl = document.getElementById('benefits-text');
-
-  if (benefitTabsEl && benefitImageEl && benefitTextEl) {
-    var nav = new Splide(benefitTabsEl, {
-      direction: 'ttb',
-      isNavigation: true,
-      height: 'auto',
-      drag: false,
-      pagination: false,
-      arrows: false,
-      gap: '10px',
-    });
-
-    var mainImage = new Splide(benefitImageEl, {
-      rewind: true,
-      type: 'fade',
-      autoWidth: true,
-      pagination: false,
-      arrows: false,
-      autoplay: true,
-      interval: 10000,
-    });
-
-    var mainText = new Splide(benefitTextEl, {
-      type: 'fade',
-      drag: false,
-      pagination: false,
-      arrows: false,
-    });
-
-    mainImage.sync(nav);
-    mainImage.sync(mainText);
-
-    nav.mount();
-    mainImage.mount();
-    mainText.mount();
-  }
-{% endjavascript %}
 
 {% schema %}
 {
   "name": "t:general.product_hero",
   "settings": [
-    {
-      "type": "radio",
-      "id": "layout",
-      "label": "t:labels.layout",
-      "options": [
-        {
-          "value": "left",
-          "label": "t:options.layout.left"
-        },
-        {
-          "value": "right",
-          "label": "t:options.layout.right"
-        }
-      ],
-      "default": "left"
-    },
     {
       "type": "checkbox",
       "id": "show_low_stock_badge",
@@ -450,16 +80,6 @@
       "id": "show_people_watching_badge",
       "label": "t:labels.show_people_watching_badge",
       "default": true
-    },
-    {
-      "type": "range",
-      "id": "padding",
-      "label": "t:labels.padding",
-      "min": 0,
-      "max": 120,
-      "step": 4,
-      "unit": "px",
-      "default": 0
     }
   ],
   "presets": [
