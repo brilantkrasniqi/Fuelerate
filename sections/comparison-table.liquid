@@ -6,7 +6,7 @@
   assign row_grid_style = 'grid-template-columns: minmax(12rem, 1.4fr) repeat(' | append: remaining_columns | append: ', minmax(14rem, 1fr));'
 %}
 {% if rows.size > 0 and columns.size > 0 %}
-  <div class='comparison-table'>
+  <div class='comparison-table bg-lightgray'>
     <div class='comparison-table__content flex flex-col gap-10'>
       <h2 class='text-brand-500 text-center text-4xl leading-[1.2]'>
         {% if comparison.headings.value != blank %}
@@ -16,7 +16,8 @@
         {% endif %}
       </h2>
 
-      <div class='comparison-table__scroll'>
+      {% comment %} Desktop / tablet: full grid table {% endcomment %}
+      <div class='comparison-table__scroll hidden lg:block'>
         <div class='comparison-table__card relative rounded-3xl bg-white shadow-sm'>
           <div class='comparison-table__row px-8' style='{{ row_grid_style }}'>
             {% for column in columns %}
@@ -95,6 +96,73 @@
           {% endfor %}
         </div>
       </div>
+
+      {% comment %}
+        Mobile / tablet: static "Solution" column + a Splide slider where
+        each remaining column becomes one full swipeable card.
+      {% endcomment %}
+      <div class='comparison-table__mobile flex items-start gap-4 lg:hidden'>
+        <div class='comparison-table__pillar flex shrink-0 flex-col overflow-visible rounded bg-white shadow-sm'>
+          <div class='comparison-table__pillar-heading py-4 text-center'>
+            <span class='text-brand-500 '>{{ columns.first.table_heading_label.value }}SOLUTION</span>
+          </div>
+          {% for row in rows %}
+            <div
+              class='comparison-table__pillar-item flex flex-col items-center justify-center gap-2 py-4 text-center'
+              data-active='{% if row.highlight.value %}true{% else %}false{% endif %}'
+            >
+              <span class='flex h-9 w-9 shrink-0 items-center justify-center rounded-full'>
+                {% if row.row_image.value %}
+                  {{
+                    row.row_image.value
+                    | image_url: width: 40
+                    | image_tag:
+                      width: 40,
+                      height: 40,
+                      loading: 'lazy',
+                      alt: row.row_name.value,
+                      class: 'w-10! h-10! object-contain'
+                  }}
+                {% endif %}
+              </span>
+              <span class='text-brand-500 text-sm leading-[1.2]'>{{ row.row_name.value }}</span>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class='comparison-table__splide splide h-full min-w-0 flex-1' data-comparison-splide>
+          <div class='splide__track h-full overflow-hidden rounded bg-white shadow-sm'>
+            <ul class='splide__list'>
+              {% for column in columns offset: 1 %}
+                <li class='splide__slide'>
+                  <div class='comparison-table__slide flex flex-col'>
+                    <div class='comparison-table__slide-heading border-brand-100 border-b px-4 py-4 text-center'>
+                      <span class='text-brand-500'>{{ column.table_heading_label.value }}</span>
+                    </div>
+                    {% for row in rows %}
+                      {% assign row_values = row.row_values.value %}
+                      {% assign value_index = forloop.parentloop.index0 %}
+                      {% if row.highlight.value %}
+                        <div
+                          class='comparison-table__slide-row comparison-table__slide-row--highlight relative z-10 flex items-center justify-center bg-[#3f6b3b] px-4 py-4 text-center shadow-xl'
+                        >
+                          <span class='text-white'>{{ row_values[value_index] }}</span>
+                        </div>
+                      {% else %}
+                        <div
+                          class='comparison-table__slide-row border-brand-100 flex items-center justify-center border-t px-4 py-4 text-center'
+                        >
+                          <span class='text-brand-300'>{{ row_values[value_index] }}</span>
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </li>
+              {%- endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 {% endif %}
@@ -119,7 +187,91 @@
     display: grid;
     gap: 1rem;
   }
+
+  .comparison-table__pillar-heading,
+  .comparison-table__slide-heading {
+    min-height: 3.375rem;
+    padding-inline: 0.75rem;
+    box-sizing: border-box;
+  }
+  .comparison-table__pillar-item,
+  .comparison-table__slide-row {
+    min-height: 4.75rem;
+    box-sizing: border-box;
+  }
+  .comparison-table__pillar-item {
+    position: relative;
+    z-index: 0;
+    padding-inline: 0.75rem;
+    transition: color 0.25s ease;
+  }
+  .comparison-table__pillar-item:not(:first-child) {
+    border-top: 1px solid var(--color-brand-100);
+  }
+  .comparison-table__pillar-item[data-active='true'] {
+    border-top-color: transparent;
+    margin-block: 0.25rem;
+  }
+  .comparison-table__pillar-item[data-active='true']::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    margin-inline: -0.75rem;
+    border-radius: 1.25rem;
+    background-color: #3f6b3b;
+    box-shadow: 0 10px 25px -5px color-mix(in oklab, #3f6b3b 45%, transparent);
+  }
+  .comparison-table__pillar-item[data-active='true'] span {
+    color: #fff;
+  }
+  .comparison-table__pillar-item img {
+    transition: filter 0.25s ease;
+  }
+  .comparison-table__pillar-item[data-active='true'] img {
+    filter: brightness(0) invert(1);
+  }
+
+  .comparison-table__slide {
+    padding-inline: 0.75rem;
+  }
+  .comparison-table__slide-row--highlight {
+    margin-inline: -0.75rem;
+    padding-inline: 1.5rem;
+    border-radius: 1rem;
+  }
 {% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('[data-comparison-splide]').forEach(function (el) {
+    var mql = window.matchMedia('(min-width: 1024px)');
+    var splide;
+
+    function sync() {
+      if (mql.matches) {
+        if (splide) {
+          splide.destroy();
+          splide = null;
+        }
+      } else if (!splide && typeof Splide !== 'undefined') {
+        splide = new Splide(el, {
+          perPage: 1,
+          gap: '16px',
+          arrows: false,
+          pagination: true,
+          classes: {
+            pagination: 'splide__pagination absolute flex items-center justify-center gap-2 pt-4',
+            page: 'splide__pagination__page size-2.5 rounded-full bg-brand-50 [&.is-active]:bg-buttons transition-all',
+          },
+        });
+        splide.mount();
+      }
+    }
+
+    sync();
+    mql.addEventListener('change', sync);
+  });
+{% endjavascript %}
 
 {% schema %}
 {

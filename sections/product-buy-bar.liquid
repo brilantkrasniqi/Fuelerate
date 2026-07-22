@@ -1,11 +1,5 @@
-{% comment %}
-  Static end-of-page buy module: an optional heading, the product title,
-  price, and add-to-cart. A second product form so shoppers can convert
-  after reading the below-the-fold content without scrolling back up.
-  Added to templates/product.json.
-{% endcomment %}
 {% assign current_variant = product.selected_or_first_available_variant %}
-<div class='mx-auto flex w-full min-w-50 justify-center'>
+<div class='bg-lightgray mx-auto flex w-full min-w-50 justify-center pb-10'>
   {% form 'product', product %}
     {% render 'product-add-to-cart', variant: current_variant %}
   {% endform %}

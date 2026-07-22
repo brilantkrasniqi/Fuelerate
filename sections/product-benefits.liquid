@@ -14,7 +14,7 @@
   <div class='bg-lightgray grid gap-0 px-5 pt-5 pb-6.5 md:px-17.5 md:pt-22 lg:grid-cols-2'>
     <div class='flex min-w-0 flex-col gap-6'>
       <div class='flex flex-col gap-1'>
-        <h2 class='text-brand-500 text-[64px] leading-[1.2]'>{{ benefits_title }}</h2>
+        <h2 class='text-brand-500 text-2xl leading-[1.2] md:text-[64px]'>{{ benefits_title }}</h2>
         <p class='leading-[1.1]'>{{ benefits_description }}</p>
       </div>
       <div class='flex justify-between gap-4'>
@@ -55,7 +55,7 @@
           {% for item in benefits_items %}
             <li class='splide__slide'>
               <div class='flex min-w-0 flex-col justify-between gap-8.5'>
-                <h3 class='text-5xl leading-[1.2] text-white'>{{ item.tab_title }}</h3>
+                <h3 class='text-2xl leading-[1.2] text-white md:text-5xl'>{{ item.tab_title }}</h3>
                 <div class='rte wrap-break-word **:text-white'>
                   {{ item.benefit_description | metafield_tag }}
                 </div>
