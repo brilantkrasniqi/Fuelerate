@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 
 @theme {
+  /* @font-face lives in snippets/css-variables.liquid (needs asset_url) */
+  --font-sans: 'Recoleta', Georgia, 'Times New Roman', serif;
   --color-brand-500: #31331e;
   --color-brand-300: #31331ebf;
   --color-brand-100: #56814c80;
@@ -9,6 +11,9 @@
   --color-alert-400: #ff81814d;
   --color-alert-300: #ff3030b5;
   --color-success-200: #7aa66f40;
+}
+.shopify-section {
+  @apply mx-auto max-w-[1920px];
 }
 
 body {
@@ -46,4 +51,24 @@ h6 {
 
 p:empty {
   display: none;
+}
+
+/* Rich text from metafields / product descriptions. Scoped to .rte so it
+   never affects Tailwind-reset lists like the splide carousels. */
+.rte ul,
+.rte ol {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+.rte ul {
+  list-style-type: disc;
+}
+.rte ol {
+  list-style-type: decimal;
+}
+.rte li {
+  margin-bottom: 0.25rem;
+}
+.rte a {
+  text-decoration: underline;
 }
