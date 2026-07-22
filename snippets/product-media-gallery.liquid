@@ -52,16 +52,19 @@
           splide.destroy();
           splide = null;
         }
-      } else if (!splide && typeof Splide !== 'undefined') {
-        splide = new Splide(el, {
-          perPage: 1,
-          gap: '16px',
-          focus: 'center',
-          padding: { right: 60 },
-          arrows: false,
-          pagination: false,
+      } else if (!splide) {
+        window.whenSplide(function () {
+          if (mql.matches || splide) return;
+          splide = new Splide(el, {
+            perPage: 1,
+            gap: '16px',
+            focus: 'center',
+            padding: { right: 60 },
+            arrows: false,
+            pagination: false,
+          });
+          splide.mount();
         });
-        splide.mount();
       }
     }
 

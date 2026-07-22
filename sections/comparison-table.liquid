@@ -2,6 +2,7 @@
   assign comparison = product.metafields.custom.comparison_table.value
   assign columns = comparison.columns.value
   assign rows = comparison.rows.value
+  assign first_column = columns | first
   assign remaining_columns = columns.size | minus: 1
   assign row_grid_style = 'grid-template-columns: minmax(12rem, 1.4fr) repeat(' | append: remaining_columns | append: ', minmax(14rem, 1fr));'
 %}
@@ -104,7 +105,7 @@
       <div class='comparison-table__mobile flex items-start gap-4 lg:hidden'>
         <div class='comparison-table__pillar flex shrink-0 flex-col overflow-visible rounded bg-white shadow-sm'>
           <div class='comparison-table__pillar-heading py-4 text-center'>
-            <span class='text-brand-500 '>{{ columns.first.table_heading_label.value }}SOLUTION</span>
+            <span class='text-brand-500'>{{ first_column.table_heading_label.value }}</span>
           </div>
           {% for row in rows %}
             <div
@@ -253,18 +254,21 @@
           splide.destroy();
           splide = null;
         }
-      } else if (!splide && typeof Splide !== 'undefined') {
-        splide = new Splide(el, {
-          perPage: 1,
-          gap: '16px',
-          arrows: false,
-          pagination: true,
-          classes: {
-            pagination: 'splide__pagination absolute flex items-center justify-center gap-2 pt-4',
-            page: 'splide__pagination__page size-2.5 rounded-full bg-brand-50 [&.is-active]:bg-buttons transition-all',
-          },
+      } else if (!splide) {
+        window.whenSplide(function () {
+          if (mql.matches || splide) return;
+          splide = new Splide(el, {
+            perPage: 1,
+            gap: '16px',
+            arrows: false,
+            pagination: true,
+            classes: {
+              pagination: 'splide__pagination absolute flex items-center justify-center gap-2 pt-4',
+              page: 'splide__pagination__page size-2.5 rounded-full bg-brand-50 [&.is-active]:bg-buttons transition-all',
+            },
+          });
+          splide.mount();
         });
-        splide.mount();
       }
     }
 
