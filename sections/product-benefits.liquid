@@ -84,40 +84,42 @@
   var benefitImageEl = document.getElementById('benefits-image');
   var benefitTextEl = document.getElementById('benefits-text');
 
-  if (benefitTabsEl && benefitImageEl && benefitTextEl && typeof Splide !== 'undefined') {
-    var nav = new Splide(benefitTabsEl, {
-      direction: 'ttb',
-      isNavigation: true,
-      height: 'auto',
-      drag: false,
-      pagination: false,
-      arrows: false,
-      gap: '10px',
+  if (benefitTabsEl && benefitImageEl && benefitTextEl) {
+    window.whenSplide(function () {
+      var nav = new Splide(benefitTabsEl, {
+        direction: 'ttb',
+        isNavigation: true,
+        height: 'auto',
+        drag: false,
+        pagination: false,
+        arrows: false,
+        gap: '10px',
+      });
+
+      var mainImage = new Splide(benefitImageEl, {
+        rewind: true,
+        type: 'fade',
+        autoWidth: true,
+        pagination: false,
+        arrows: false,
+        autoplay: true,
+        interval: 10000,
+      });
+
+      var mainText = new Splide(benefitTextEl, {
+        type: 'fade',
+        drag: false,
+        pagination: false,
+        arrows: false,
+      });
+
+      mainImage.sync(nav);
+      mainImage.sync(mainText);
+
+      nav.mount();
+      mainImage.mount();
+      mainText.mount();
     });
-
-    var mainImage = new Splide(benefitImageEl, {
-      rewind: true,
-      type: 'fade',
-      autoWidth: true,
-      pagination: false,
-      arrows: false,
-      autoplay: true,
-      interval: 10000,
-    });
-
-    var mainText = new Splide(benefitTextEl, {
-      type: 'fade',
-      drag: false,
-      pagination: false,
-      arrows: false,
-    });
-
-    mainImage.sync(nav);
-    mainImage.sync(mainText);
-
-    nav.mount();
-    mainImage.mount();
-    mainText.mount();
   }
 {% endjavascript %}
 

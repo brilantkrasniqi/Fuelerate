@@ -16,7 +16,23 @@
 
     <link rel='preconnect' href='https://cdn.jsdelivr.net' crossorigin>
     <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide-core.min.css'>
-    <script src='https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js' defer></script>
+    <script
+      id='splide-script'
+      src='https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js'
+      defer
+    ></script>
+    <script>
+      window.whenSplide = function (callback) {
+        if (typeof Splide !== 'undefined') {
+          callback();
+          return;
+        }
+        var script = document.getElementById('splide-script');
+        if (script) {
+          script.addEventListener('load', callback, { once: true });
+        }
+      };
+    </script>
 
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
@@ -30,7 +46,5 @@
     {{ content_for_layout }}
 
     {% sections 'footer-group' %}
-
-    {% render 'theme-devtools-bridge' %}
   </body>
 </html>

@@ -4,7 +4,6 @@
   if show_low_stock and current_variant.inventory_management != blank and current_variant.inventory_quantity > 0 and current_variant.inventory_quantity < 50
     assign show_low_stock_badge = true
   endif
-  assign watcher_count = product.id | modulo: 73 | plus: 15
 %}
 {% if show_low_stock_badge or show_people_watching %}
   <div class='flex items-center gap-3'>
@@ -21,7 +20,7 @@
       </div>
     {% endif %}
     {% if show_people_watching %}
-      <div class='bg-success-200 flex items-center gap-2 rounded-3xl px-2 py-1'>
+      <div class='bg-success-200 flex items-center gap-2 rounded-3xl px-2 py-1' data-people-watching hidden>
         <img
           src='{{ 'Alert-Success.svg' | asset_url }}'
           alt='{{ 'products.people_watching_icon_alt' | t }}'
@@ -31,21 +30,23 @@
         >
         <span
           class='text-brand-500 leading-[1.1]'
-          data-people-watching
+          data-people-watching-text
           data-template='{{ 'products.people_watching' | t: count: '__COUNT__' | escape }}'
-        >
-          {{ 'products.people_watching' | t: count: watcher_count }}
-        </span>
+        ></span>
       </div>
     {% endif %}
   </div>
 {% endif %}
 
 {% javascript %}
-  document.querySelectorAll('[data-people-watching]').forEach(function (element) {
+  document.querySelectorAll('[data-people-watching]').forEach(function (badge) {
+    var textEl = badge.querySelector('[data-people-watching-text]');
+    if (!textEl) return;
+
     var min = 15;
     var max = 87;
     var randomCount = Math.floor(Math.random() * (max - min + 1)) + min;
-    element.textContent = element.dataset.template.replace('__COUNT__', randomCount);
+    textEl.textContent = textEl.dataset.template.replace('__COUNT__', randomCount);
+    badge.hidden = false;
   });
 {% endjavascript %}
