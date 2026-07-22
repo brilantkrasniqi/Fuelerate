@@ -23,7 +23,7 @@
             <ul class='splide__list'>
               {% for item in benefits_items %}
                 <li
-                  class='splide__slide group border-brand-500 [&.is-active]:bg-brand-500 [&.is-active]:border-brand-500 flex w-fit items-center gap-2.5 rounded-full border px-5 py-3'
+                  class='splide__slide group border-brand-500 [&.is-active]:bg-brand-500 [&.is-active]:border-brand-500 flex w-fit! cursor-pointer items-center gap-2.5 rounded-full border px-5 py-3'
                 >
                   {{ item.tab_icon | image_url: width: 24 | image_tag: width: 24, height: 24, loading: 'lazy' }}
                   <span class='text-brand-500 leading-[1.1] group-[.is-active]:text-white'>{{ item.tab_title }}</span>
@@ -32,7 +32,7 @@
             </ul>
           </div>
         </div>
-        <div class='splide hidden w-[331px] lg:block' id='benefits-image'>
+        <div class='splide hidden max-w-82.75 lg:flex lg:items-end' id='benefits-image'>
           <div class='splide__track'>
             <ul class='splide__list'>
               {% for item in benefits_items %}

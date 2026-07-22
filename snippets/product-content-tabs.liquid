@@ -15,50 +15,52 @@
 %}
 {% if content_blocks %}
   {% comment %} Desktop: tabs {% endcomment %}
-  <div class='hidden md:block'>
-    <div class='flex flex-col gap-7.5' data-product-tabs>
+  <div class='hidden min-w-0 md:block'>
+    <div class='flex min-w-0 flex-col gap-7.5' data-product-tabs>
       <div class='flex w-full items-center' role='tablist'>
         {% for item in content_blocks %}
           <button
             type='button'
-            class='group border-brand-500 relative flex flex-1 cursor-pointer items-center justify-center overflow-visible! border-b pb-4.5 {% if forloop.first %}active{% endif %}'
+            class='group border-brand-500 relative flex min-w-0 flex-1 cursor-pointer items-center justify-center overflow-visible! border-b pb-4.5 {% if forloop.first %}active{% endif %}'
             data-product-tab
             role='tab'
             aria-selected='{% if forloop.first %}true{% else %}false{% endif %}'
           >
-            <span class='text-center whitespace-nowrap'>{{ item.title.value }}</span>
+            <span class='truncate text-center'>{{ item.title.value }}</span>
             <span class='bg-brand-500 absolute right-0 bottom-0 h-1 w-1 translate-y-1/2 rounded-full'></span>
             <span
-              class='bg-brand-500 absolute bottom-0 hidden h-3.5 w-full translate-y-1/2 rounded-full group-[.active]:block'
+              class='bg-brand-500 absolute bottom-0  hidden h-3.5 w-full translate-y-1/2 rounded-full group-[.active]:block'
             ></span>
           </button>
         {% endfor %}
       </div>
-      {% for item in content_blocks %}
-        <div
-          class='rte **:text-md **:text-brand-300 **:leading-[1.1]'
-          data-product-tabpanel
-          role='tabpanel'
-          {% unless forloop.first %}
-            hidden
-          {% endunless %}
-        >
-          {{ item.content | metafield_tag }}
-        </div>
-      {% endfor %}
+      <div class='product-tabpanels relative min-w-0'>
+        {% for item in content_blocks %}
+          <div
+            class='rte **:text-md **:text-brand-300 product-tabpanel min-w-0 **:leading-[1.1]'
+            data-product-tabpanel
+            role='tabpanel'
+            {% unless forloop.first %}
+              hidden
+            {% endunless %}
+          >
+            {{ item.content | metafield_tag }}
+          </div>
+        {% endfor %}
+      </div>
     </div>
   </div>
   {% comment %} Mobile: accordion, no JS required {% endcomment %}
-  <div class='flex flex-col md:hidden'>
+  <div class='flex flex-col pb-5 md:hidden'>
     {% for item in content_blocks %}
       <details
-        class='group border-brand-500 border-b'
+        class='group border-brand-500 flex flex-col border-b-[3px]'
         {% if forloop.first %}
           open
         {% endif %}
       >
         <summary
-          class='flex cursor-pointer list-none items-center justify-between gap-4 py-4 [&::-webkit-details-marker]:hidden'
+          class='product-accordion__summary flex cursor-pointer list-none items-center justify-between gap-4 py-4'
         >
           <span class='text-brand-500 leading-[1.1] font-bold'>{{ item.title.value }}</span>
           <svg
@@ -76,13 +78,50 @@
             />
           </svg>
         </summary>
-        <div class='rte **:text-md **:text-brand-300 pb-4 **:leading-[1.1]'>
+        <div class='rte **:text-md **:text-brand-300 block pb-4 **:leading-[1.1]'>
           {{ item.content | metafield_tag }}
         </div>
       </details>
     {% endfor %}
   </div>
 {% endif %}
+
+{% stylesheet %}
+  .product-accordion__summary {
+    display: flex;
+  }
+  .product-accordion__summary::-webkit-details-marker,
+  .product-accordion__summary::marker {
+    display: none;
+    content: '';
+  }
+
+  .product-tabpanel {
+    animation: product-tabpanel-in 0.25s ease;
+  }
+
+  @keyframes product-tabpanel-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  details[open] > .rte {
+    animation: product-tabpanel-in 0.2s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .product-tabpanel,
+    details[open] > .rte {
+      animation: none;
+    }
+  }
+{% endstylesheet %}
 
 {% javascript %}
   document.querySelectorAll('[data-product-tabs]').forEach(function (root) {
@@ -91,14 +130,23 @@
 
     tabs.forEach(function (tab, index) {
       tab.addEventListener('click', function () {
+        if (tab.classList.contains('active')) return;
+
         tabs.forEach(function (otherTab) {
           otherTab.classList.remove('active');
           otherTab.setAttribute('aria-selected', 'false');
         });
         tab.classList.add('active');
         tab.setAttribute('aria-selected', 'true');
+
         panels.forEach(function (panel, panelIndex) {
-          panel.hidden = panelIndex !== index;
+          var isActive = panelIndex === index;
+          panel.hidden = !isActive;
+          if (isActive) {
+            panel.classList.remove('product-tabpanel');
+            void panel.offsetWidth;
+            panel.classList.add('product-tabpanel');
+          }
         });
       });
     });

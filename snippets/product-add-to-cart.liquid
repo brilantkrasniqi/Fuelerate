@@ -1,18 +1,8 @@
-{% doc %}
-  Renders the add-to-cart control: a hidden variant id input and the submit
-  button. Must be placed inside a {% form 'product' %}.
-
-  @param {variant} variant - The variant to add to cart
-
-  @example
-  {% render 'product-add-to-cart', variant: product.selected_or_first_available_variant %}
-{% enddoc %}
-
 <input type='hidden' name='id' value='{{ variant.id }}'>
 <button
   type='submit'
   name='add'
-  class='bg-buttons flex items-center justify-center rounded-full px-8 py-5 disabled:cursor-not-allowed disabled:opacity-50'
+  class='bg-buttons flex cursor-pointer items-center justify-center rounded-full px-8 py-5 disabled:cursor-not-allowed disabled:opacity-50'
   {% unless variant.available %}
     disabled
   {% endunless %}
