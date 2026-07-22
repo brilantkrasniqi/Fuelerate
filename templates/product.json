@@ -31,12 +31,17 @@
     "comparison-table": {
       "type": "comparison-table",
       "settings": {}
+    },
+    "product-buy-bar": {
+      "type": "product-buy-bar",
+      "settings": {}
     }
   },
   "order": [
     "main",
     "product-bar",
     "product-benefits",
-    "comparison-table"
+    "comparison-table",
+    "product-buy-bar"
   ]
 }

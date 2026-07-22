@@ -1,14 +1,23 @@
 {% style %}
-  {% # Loads all font variantions with display: swap %}
-  {{ settings.type_primary_font | font_face: font_display: 'swap' }}
-  {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
-  {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
-  {{ settings.type_primary_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+  {% # Self-hosted Recoleta — regular (400) and bold (700), display: swap %}
+  @font-face {
+    font-family: 'Recoleta';
+    src: url({{ 'recoleta-regular.otf' | asset_url }}) format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Recoleta';
+    src: url({{ 'recoleta-bold.otf' | asset_url }}) format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
 
   :root {
-    --font-primary--family: {{ settings.type_primary_font.family }}, {{ settings.type_primary_font.fallback_families }};
-    --font-primary--style: {{ settings.type_primary_font.style }};
-    --font-primary--weight: {{ settings.type_primary_font.weight }};
+    --font-primary--family: 'Recoleta', Georgia, 'Times New Roman', serif;
     --page-width: {{ settings.max_page_width }};
     --page-margin: {{ settings.min_page_margin }}px;
     --content-grid: minmax(var(--page-margin), 1fr) minmax(0, min(var(--page-width), 100%)) minmax(var(--page-margin), 1fr);

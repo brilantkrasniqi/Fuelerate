@@ -36,7 +36,7 @@
       </div>
       {% for item in content_blocks %}
         <div
-          class='**:text-md **:text-brand-300 **:leading-[1.1]'
+          class='rte **:text-md **:text-brand-300 **:leading-[1.1]'
           data-product-tabpanel
           role='tabpanel'
           {% unless forloop.first %}
@@ -76,7 +76,7 @@
             />
           </svg>
         </summary>
-        <div class='**:text-md **:text-brand-300 pb-4 **:leading-[1.1]'>
+        <div class='rte **:text-md **:text-brand-300 pb-4 **:leading-[1.1]'>
           {{ item.content | metafield_tag }}
         </div>
       </details>

@@ -23,7 +23,7 @@
         %}
 
         {% if product.description %}
-          <div class='**:text-brand-500 **:leading-[1.1]'>{{ product.description }}</div>
+          <div class='rte **:text-brand-500 **:leading-[1.1]'>{{ product.description }}</div>
         {% endif %}
 
         {% render 'product-price', variant: current_variant %}
@@ -31,23 +31,7 @@
 
       {% render 'product-featured-group', product: product %}
 
-      <input type='hidden' name='id' value='{{ current_variant.id }}'>
-      <button
-        type='submit'
-        name='add'
-        class='bg-buttons flex items-center justify-center rounded-full px-8 py-5 disabled:cursor-not-allowed disabled:opacity-50'
-        {% unless current_variant.available %}
-          disabled
-        {% endunless %}
-      >
-        <span class='text-brand-500 text-2xl leading-[1.2] uppercase'>
-          {% if current_variant.available %}
-            {{ 'products.add_to_cart' | t }}
-          {% else %}
-            {{ 'products.sold_out' | t }}
-          {% endif %}
-        </span>
-      </button>
+      {% render 'product-add-to-cart', variant: current_variant %}
 
       {% render 'product-content-tabs', product: product %}
     </div>

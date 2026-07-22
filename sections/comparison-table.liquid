@@ -3,7 +3,7 @@
   assign columns = comparison.columns.value
   assign rows = comparison.rows.value
   assign remaining_columns = columns.size | minus: 1
-  assign row_grid_style = 'grid-template-columns: 1.4fr repeat(' | append: remaining_columns | append: ', 1fr);'
+  assign row_grid_style = 'grid-template-columns: minmax(12rem, 1.4fr) repeat(' | append: remaining_columns | append: ', minmax(14rem, 1fr));'
 %}
 {% if rows.size > 0 and columns.size > 0 %}
   <div class='comparison-table'>
@@ -16,67 +16,79 @@
         {% endif %}
       </h2>
 
-      <div class='relative rounded-3xl bg-white shadow-sm'>
-        <div class='comparison-table__row px-8 py-5' style='{{ row_grid_style }}'>
-          {% for column in columns %}
-            <span class='text-brand-500 font-bold'>{{ column.table_heading_label.value }}</span>
+      <div class='comparison-table__scroll'>
+        <div class='comparison-table__card relative rounded-3xl bg-white shadow-sm'>
+          <div class='comparison-table__row px-8' style='{{ row_grid_style }}'>
+            {% for column in columns %}
+              {% if forloop.first %}
+                <span class='text-brand-500 py-5 font-bold'>{{ column.table_heading_label.value }}</span>
+              {% else %}
+                <span class='text-brand-500 border-brand-100 flex items-center border-l py-5 pl-4 font-bold'>
+                  {{ column.table_heading_label.value }}
+                </span>
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          {% for row in rows %}
+            {% assign row_values = row.row_values.value %}
+            {% if row.highlight.value %}
+              <div
+                class='comparison-table__row relative z-10 -mx-4 -my-3 items-center rounded-2xl bg-[#3f6b3b] px-8 py-7 shadow-xl'
+                style='{{ row_grid_style }}'
+              >
+                {% for column in columns %}
+                  {% if forloop.first %}
+                    <div class='flex items-center gap-3'>
+                      <span class='flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white'>
+                        {% if row.row_image.value %}
+                          {{
+                            row.row_image.value
+                            | image_url: width: 40
+                            | image_tag: width: 20, height: 20, loading: 'lazy', alt: row.row_name.value
+                          }}
+                        {% endif %}
+                      </span>
+                      <span class='font-bold text-white'>{{ row.row_name.value }}</span>
+                    </div>
+                  {% else %}
+                    {% assign value_index = forloop.index0 | minus: 1 %}
+                    <span class='flex h-full items-center border-l border-white/15 pl-4 font-bold text-white'>
+                      {{ row_values[value_index] }}
+                    </span>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% else %}
+              <div
+                class='comparison-table__row border-brand-100 border-t px-8'
+                style='{{ row_grid_style }}'
+              >
+                {% for column in columns %}
+                  {% if forloop.first %}
+                    <div class='flex items-center gap-3 py-6'>
+                      <span class='flex h-6 w-6 shrink-0 items-center justify-center'>
+                        {% if row.row_image.value %}
+                          {{
+                            row.row_image.value
+                            | image_url: width: 40
+                            | image_tag: width: 24, height: 24, loading: 'lazy', alt: row.row_name.value
+                          }}
+                        {% endif %}
+                      </span>
+                      <span class='text-brand-500 font-bold'>{{ row.row_name.value }}</span>
+                    </div>
+                  {% else %}
+                    {% assign value_index = forloop.index0 | minus: 1 %}
+                    <span class='text-brand-300 border-brand-100 flex items-center border-l py-6 pl-4'>
+                      {{ row_values[value_index] }}
+                    </span>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endif %}
           {% endfor %}
         </div>
-
-        {% for row in rows %}
-          {% assign row_values = row.row_values.value %}
-          {% if row.highlight.value %}
-            <div
-              class='comparison-table__row relative z-10 -mx-4 -my-3 items-center rounded-2xl bg-[#3f6b3b] px-9 py-7 shadow-xl'
-              style='{{ row_grid_style }}'
-            >
-              {% for column in columns %}
-                {% if forloop.first %}
-                  <div class='flex items-center gap-3'>
-                    <span class='flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white'>
-                      {% if row.row_image.value %}
-                        {{
-                          row.row_image.value
-                          | image_url: width: 40
-                          | image_tag: width: 20, height: 20, loading: 'lazy', alt: row.row_name.value
-                        }}
-                      {% endif %}
-                    </span>
-                    <span class='font-bold text-white'>{{ row.row_name.value }}</span>
-                  </div>
-                {% else %}
-                  {% assign value_index = forloop.index0 | minus: 1 %}
-                  <span class='font-bold text-white'>{{ row_values[value_index] }}</span>
-                {% endif %}
-              {% endfor %}
-            </div>
-          {% else %}
-            <div
-              class='comparison-table__row border-brand-100 items-center border-t px-8 py-6'
-              style='{{ row_grid_style }}'
-            >
-              {% for column in columns %}
-                {% if forloop.first %}
-                  <div class='flex items-center gap-3'>
-                    <span class='flex h-6 w-6 shrink-0 items-center justify-center'>
-                      {% if row.row_image.value %}
-                        {{
-                          row.row_image.value
-                          | image_url: width: 40
-                          | image_tag: width: 24, height: 24, loading: 'lazy', alt: row.row_name.value
-                        }}
-                      {% endif %}
-                    </span>
-                    <span class='text-brand-500 font-bold'>{{ row.row_name.value }}</span>
-                  </div>
-                {% else %}
-                  {% assign value_index = forloop.index0 | minus: 1 %}
-                  <span class='text-brand-300'>{{ row_values[value_index] }}</span>
-                {% endif %}
-              {% endfor %}
-            </div>
-          {% endif %}
-        {% endfor %}
       </div>
     </div>
   </div>
@@ -90,6 +102,13 @@
   }
   .comparison-table__content {
     grid-column: 2;
+  }
+  .comparison-table__scroll {
+    overflow-x: auto;
+    padding-inline: 1.25rem;
+  }
+  .comparison-table__card {
+    min-width: min-content;
   }
   .comparison-table__row {
     display: grid;
