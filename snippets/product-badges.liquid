@@ -1,16 +1,3 @@
-{% doc %}
-  Renders the availability badges shown under the product title: a low
-  stock badge (only when tracked inventory is under 50 units) and a
-  "people watching" badge whose count is randomized client-side.
-
-  @param {product} product - The product to read inventory from
-  @param {boolean} [show_low_stock] - Whether to show the low stock badge
-  @param {boolean} [show_people_watching] - Whether to show the watching badge
-
-  @example
-  {% render 'product-badges', product: product, show_low_stock: true, show_people_watching: true %}
-{% enddoc %}
-
 {% liquid
   assign current_variant = product.selected_or_first_available_variant
   assign show_low_stock_badge = false

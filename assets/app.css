@@ -1,7 +1,6 @@
 @import 'tailwindcss';
 
 @theme {
-  /* @font-face lives in snippets/css-variables.liquid (needs asset_url) */
   --font-sans: 'Recoleta', Georgia, 'Times New Roman', serif;
   --color-brand-500: #31331e;
   --color-brand-300: #31331ebf;
@@ -11,6 +10,10 @@
   --color-alert-400: #ff81814d;
   --color-alert-300: #ff3030b5;
   --color-success-200: #7aa66f40;
+  --background-image-brand: linear-gradient(90deg, #799d65 0%, #9dbb81 25%, #416e3d 100%);
+}
+@utility no-scrollbar {
+  @apply [scrollbar-width:none] [&::-webkit-scrollbar]:hidden;
 }
 .shopify-section {
   @apply mx-auto max-w-[1920px];
@@ -22,6 +25,7 @@ body {
   box-sizing: border-box;
   touch-action: manipulation;
   min-height: 100svh;
+  overflow-x: hidden;
 }
 html:has(dialog[scroll-lock][open], details[scroll-lock][open]) {
   overflow: hidden;

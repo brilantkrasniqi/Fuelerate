@@ -4,7 +4,10 @@
     "primary_navigation": "Primary navigation",
     "footer_navigation": "Footer navigation",
     "shop": "Shop",
-    "all_products": "All products"
+    "all_products": "All products",
+    "accessibility": {
+      "close": "Close"
+    }
   },
   "404": {
     "title": "404",

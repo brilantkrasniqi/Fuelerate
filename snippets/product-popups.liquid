@@ -1,0 +1,214 @@
+{% liquid
+  assign popups = product.metafields.custom.popup_videos.value
+  assign popups_title = popups.heading
+  assign popup_items = popups.popups.value
+%}
+{% if popup_items.size > 0 %}
+  <div class='border-brand-500 border-t border-b py-7.5'>
+    <div class='flex flex-col gap-4'>
+      {% if popups_title != blank %}
+        <p class='text-brand-500 text-2xl leading-[1.2]'>{{ popups_title }}</p>
+      {% endif %}
+
+      <div class='no-scrollbar flex items-center gap-7 overflow-x-scroll'>
+        {% for item in popup_items %}
+          {% assign image = item.image.value %}
+          {% assign video = item.video.value %}
+          {% if video %}
+            <button
+              type='button'
+              class='product-popup__trigger border-brand-500 h-fit w-fit shrink-0 cursor-pointer rounded-full border p-1'
+              data-product-popup-trigger
+              data-popup-target='product-popup-{{ forloop.index0 }}'
+              aria-haspopup='dialog'
+            >
+              {{
+                image
+                | image_url: width: 90
+                | image_tag:
+                  width: 90,
+                  height: 90,
+                  loading: 'lazy',
+                  alt: item.title,
+                  class: 'size-22.5! object-cover rounded-full pointer-events-none'
+              }}
+            </button>
+          {% else %}
+            <div class='border-brand-500 h-fit w-fit shrink-0 rounded-full border p-1'>
+              {{
+                image
+                | image_url: width: 90
+                | image_tag: width: 90, height: 90, loading: 'lazy', class: 'size-22.5! object-cover rounded-full'
+              }}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  {% for item in popup_items %}
+    {% assign video = item.video.value %}
+    {% if video %}
+      <dialog class='product-popup' id='product-popup-{{ forloop.index0 }}' data-product-popup>
+        <div class='product-popup__panel'>
+          <button
+            type='button'
+            class='product-popup__close'
+            data-product-popup-close
+            aria-label='{{ 'general.accessibility.close' | t }}'
+          >
+            <svg viewBox='0 0 24 24' fill='none' aria-hidden='true' class='h-5 w-5'>
+              <path
+                d='M6 6L18 18M18 6L6 18'
+                stroke='currentColor'
+                stroke-width='1.75'
+                stroke-linecap='round'
+                stroke-linejoin='round'
+              />
+            </svg>
+          </button>
+          <div class='product-popup__media' data-product-popup-media>
+            <template data-product-popup-video-template>
+              {{
+                video
+                | video_tag: controls: true, autoplay: false, preload: 'none', class: 'h-full w-full object-contain'
+              }}
+            </template>
+          </div>
+        </div>
+      </dialog>
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% stylesheet %}
+  .product-popup__trigger {
+    transition: border-color 0.15s ease;
+  }
+  .product-popup__trigger:hover,
+  .product-popup__trigger:focus-visible {
+    border-color: var(--color-brand-500);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-brand-500) 20%, transparent);
+  }
+
+  .product-popup {
+    width: min(90vw, 48rem);
+    max-height: min(85vh, 48rem);
+    margin: auto;
+    padding: 0;
+    border: none;
+    border-radius: 1.25rem;
+    background: transparent;
+    overflow: visible;
+  }
+  .product-popup::backdrop {
+    background: color-mix(in oklab, var(--color-brand-500) 55%, transparent);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .product-popup[open]::backdrop {
+    opacity: 1;
+  }
+
+  .product-popup__panel {
+    position: relative;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    background: #000;
+    opacity: 0;
+    transform: scale(0.96);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+  }
+  .product-popup[open] .product-popup__panel {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .product-popup__media,
+  .product-popup__media video {
+    display: block;
+    width: 100%;
+    max-height: min(85vh, 48rem);
+  }
+
+  .product-popup__close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.25rem;
+    width: 2.25rem;
+    border-radius: 999px;
+    background: color-mix(in oklab, #000 55%, transparent);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+  .product-popup__close:hover,
+  .product-popup__close:focus-visible {
+    background: color-mix(in oklab, #000 75%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .product-popup::backdrop,
+    .product-popup__panel {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  function mountPopupVideo(dialog) {
+    var media = dialog.querySelector('[data-product-popup-media]');
+    var template = media ? media.querySelector('[data-product-popup-video-template]') : null;
+
+    if (template) {
+      media.appendChild(template.content.cloneNode(true));
+      template.remove();
+    }
+
+    return media ? media.querySelector('video') : null;
+  }
+
+  document.querySelectorAll('[data-product-popup-trigger]').forEach(function (trigger) {
+    trigger.addEventListener('click', function () {
+      var dialog = document.getElementById(trigger.dataset.popupTarget);
+      if (!dialog) return;
+
+      var video = dialog.querySelector('video') || mountPopupVideo(dialog);
+
+      dialog.showModal();
+      if (video) {
+        video.currentTime = 0;
+        video.play().catch(function () {});
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-product-popup]').forEach(function (dialog) {
+    dialog.querySelectorAll('[data-product-popup-close]').forEach(function (closeButton) {
+      closeButton.addEventListener('click', function () {
+        dialog.close();
+      });
+    });
+
+    dialog.addEventListener('click', function (event) {
+      if (event.target === dialog) {
+        dialog.close();
+      }
+    });
+
+    dialog.addEventListener('close', function () {
+      var video = dialog.querySelector('video');
+      if (video) {
+        video.pause();
+      }
+    });
+  });
+{% endjavascript %}

@@ -1,21 +1,21 @@
-<header class="border-brand-500/10 relative border-b bg-white">
-  <div class="mx-auto flex max-w-6xl items-center justify-between gap-5 px-5 py-4">
-    <a href="{{ routes.root_url }}" class="text-brand-500 shrink-0 text-2xl leading-none font-bold">
+<header class='border-brand-500/10 relative border-b bg-white'>
+  <div class='mx-auto flex max-w-6xl items-center justify-between gap-5 px-5 py-4'>
+    <a href='{{ routes.root_url }}' class='text-brand-500 shrink-0 text-2xl leading-none font-bold'>
       {{ shop.name }}
     </a>
 
-    <nav class="hidden items-center gap-7 md:flex" aria-label="{{ 'general.primary_navigation' | t }}">
+    <nav class='hidden items-center gap-7 md:flex' aria-label='{{ 'general.primary_navigation' | t }}'>
       {% if section.settings.show_collections_menu and collections.size > 0 %}
-        <details class="group relative">
+        <details class='group relative'>
           <summary
-            class="text-brand-500 hover:text-brand-300 flex cursor-pointer list-none items-center gap-1.5 leading-[1.1] [&::-webkit-details-marker]:hidden"
+            class='text-brand-500 hover:text-brand-300 flex cursor-pointer list-none items-center gap-1.5 leading-[1.1] [&::-webkit-details-marker]:hidden'
           >
             {{ 'general.shop' | t }}
             <svg
-              class="h-2.5 w-2.5 shrink-0 transition-transform group-open:rotate-180"
-              viewBox="0 0 12 8"
-              fill="none"
-              aria-hidden="true"
+              class='h-2.5 w-2.5 shrink-0 transition-transform group-open:rotate-180'
+              viewBox='0 0 12 8'
+              fill='none'
+              aria-hidden='true'
             >
               <path
                 d="M1 1L6 6L11 1"
@@ -27,16 +27,19 @@
             </svg>
           </summary>
           <div
-            class="border-brand-500/10 absolute top-full left-0 z-10 mt-3 flex max-h-[70vh] min-w-52 flex-col gap-1 overflow-y-auto rounded-2xl border bg-white p-3 shadow-md"
+            class='border-brand-500/10 absolute top-full left-0 z-10 mt-3 flex max-h-[70vh] min-w-52 flex-col gap-1 overflow-y-auto rounded-2xl border bg-white p-3 shadow-md'
           >
             <a
-              href="{{ routes.all_products_collection_url }}"
-              class="text-brand-500 hover:text-brand-300 rounded-lg px-3 py-2 leading-[1.1] font-bold"
+              href='{{ routes.all_products_collection_url }}'
+              class='text-brand-500 hover:text-brand-300 rounded-lg px-3 py-2 leading-[1.1] font-bold'
             >
               {{ 'general.all_products' | t }}
             </a>
             {% for collection in collections %}
-              <a href="{{ collection.url }}" class="text-brand-500 hover:text-brand-300 rounded-lg px-3 py-2 leading-[1.1]">
+              <a
+                href='{{ collection.url }}'
+                class='text-brand-500 hover:text-brand-300 rounded-lg px-3 py-2 leading-[1.1]'
+              >
                 {{ collection.title }}
               </a>
             {% endfor %}
@@ -45,100 +48,13 @@
       {% endif %}
       {% for link in section.settings.menu.links %}
         <a
-          href="{{ link.url }}"
-          class="text-brand-500 hover:text-brand-300 leading-[1.1] {% if link.active %}font-bold{% endif %}"
+          href='{{ link.url }}'
+          class='text-brand-500 hover:text-brand-300 leading-[1.1] {% if link.active %}font-bold{% endif %}'
         >
           {{ link.title }}
         </a>
       {% endfor %}
     </nav>
-
-    <div class="flex shrink-0 items-center gap-4">
-      <details class="relative">
-        <summary
-          class="text-brand-500 hover:text-brand-300 flex h-5 w-5 cursor-pointer list-none items-center justify-center [&::-webkit-details-marker]:hidden"
-          aria-label="{{ 'search.title' | t }}"
-        >
-          {{ 'icon-search.svg' | inline_asset_content }}
-        </summary>
-        <form
-          action="{{ routes.search_url }}"
-          method="get"
-          role="search"
-          class="border-brand-500/10 absolute top-full right-0 z-10 mt-3 flex items-center gap-2 rounded-full border bg-white p-1.5 shadow-md"
-        >
-          <input type="hidden" name="type" value="product">
-          <input
-            type="search"
-            name="q"
-            value="{{ search.terms | escape }}"
-            placeholder="{{ 'search.placeholder' | t }}"
-            class="text-brand-500 placeholder:text-brand-300 w-44 bg-transparent px-3 leading-[1.1] focus:outline-none sm:w-56"
-          >
-          <button
-            type="submit"
-            class="bg-buttons text-brand-500 shrink-0 rounded-full px-4 py-1.5 text-sm leading-[1.1] font-bold"
-          >
-            {{ 'search.submit' | t }}
-          </button>
-        </form>
-      </details>
-
-      {% if shop.customer_accounts_enabled %}
-        <shopify-account
-          menu="{{ section.settings.customer_account_menu }}"
-          class="text-brand-500 hover:text-brand-300 flex h-5 w-5 items-center justify-center"
-        >
-          {{ 'icon-account.svg' | inline_asset_content }}
-        </shopify-account>
-      {% endif %}
-
-      <a
-        href="{{ routes.cart_url }}"
-        class="text-brand-500 hover:text-brand-300 relative flex h-5 w-5 items-center justify-center"
-      >
-        {% if cart.item_count > 0 %}
-          <span
-            class="bg-buttons text-brand-500 absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold"
-          >
-            {{ cart.item_count }}
-          </span>
-        {% endif %}
-        {{ 'icon-cart.svg' | inline_asset_content }}
-      </a>
-
-      <details class="group relative md:hidden">
-        <summary
-          class="text-brand-500 hover:text-brand-300 flex h-5 w-5 cursor-pointer list-none items-center justify-center [&::-webkit-details-marker]:hidden"
-          aria-label="{{ 'general.menu' | t }}"
-        >
-          {{ 'icon-menu.svg' | inline_asset_content }}
-        </summary>
-        <nav
-          class="border-brand-500/10 absolute top-full right-0 z-10 mt-3 flex max-h-[70vh] min-w-48 flex-col gap-4 overflow-y-auto rounded-2xl border bg-white p-5 shadow-md"
-          aria-label="{{ 'general.primary_navigation' | t }}"
-        >
-          {% if section.settings.show_collections_menu and collections.size > 0 %}
-            <a href="{{ routes.all_products_collection_url }}" class="text-brand-500 hover:text-brand-300 leading-[1.1] font-bold">
-              {{ 'general.all_products' | t }}
-            </a>
-            {% for collection in collections %}
-              <a href="{{ collection.url }}" class="text-brand-500 hover:text-brand-300 leading-[1.1]">
-                {{ collection.title }}
-              </a>
-            {% endfor %}
-            {% if section.settings.menu.links.size > 0 %}
-              <hr class="border-brand-500/10">
-            {% endif %}
-          {% endif %}
-          {% for link in section.settings.menu.links %}
-            <a href="{{ link.url }}" class="text-brand-500 hover:text-brand-300 leading-[1.1]">
-              {{ link.title }}
-            </a>
-          {% endfor %}
-        </nav>
-      </details>
-    </div>
   </div>
 </header>
 
